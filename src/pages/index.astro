@@ -1,9 +1,9 @@
 ---
-// import "../styles/mailer.css";
+import "../styles/mailer.css";
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-
+import Form from '../components/Form.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
 
@@ -50,7 +50,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 				</a> by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
 			</p>
 
-		
+			<Form />
 		</main>
 		<Footer />
 	</body>
