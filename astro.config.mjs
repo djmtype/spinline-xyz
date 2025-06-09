@@ -1,11 +1,21 @@
+// @ts-check
 import { defineConfig } from 'astro/config';
-import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
+import tailwindcss from '@tailwindcss/vite'
 
-import lighthouse from "astro-lighthouse";
+
+
+import netlify from '@astrojs/netlify';
+
+
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://spinline.xyz',
-  integrations: [mdx(), sitemap(), lighthouse()]
+  vite: {
+   plugins: [
+     tailwindcss(),
+   ],
+  },
+
+  integrations: [],
+  adapter: netlify()
 });

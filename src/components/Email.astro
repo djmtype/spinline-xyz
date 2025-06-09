@@ -1,0 +1,24 @@
+<h1>Astro</h1>
+<button>Send Email</button>
+    
+  <script>
+   import {
+        sendEmail,
+        type EmailRequest,
+      } from "@hbertoson/astro-resend/client";
+
+      
+      const button = document.querySelector("button");
+      button?.addEventListener("click", async () => {
+        const emailData: EmailRequest = {
+          to: "scott@spinline.xyz",
+          subject: "Test Email",
+          templateName: "email",
+          props: {
+            name: "Hunter",
+            content: "This is a test email. From my Astro Resend Integration",
+          },
+        };
+        await sendEmail(emailData);
+      });
+    </script>
