@@ -1,32 +1,92 @@
 ---
-import "@/style/app.css"
-
+export const prerender = false
+// import "@/style/app.css"
 ---
 
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+>
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro</title>
 	</head>
 	<body class="flex bg-gray-100 items-center justify-center h-[100svh] w-full">
 
- <form method="POST" action="/api/contact" netlify>
-      <label>
-        Name:
-        <input type="text" name="name" required />
-      </label>
-      <label>
-        Email:
-        <input type="email" name="email" required />
-      </label>
-      <label>
-        Message:
-        <textarea name="message" required></textarea>
-      </label>
-      <button type="submit">Send</button>
-    </form>
+ <main class="container">
+   <form class="flex flex-col" method="POST" action="/api/contact" enctype="multipart/form-data">
+    <label>First Name
+    <input type="text" name="first_name" required />
+    </label>
+    <label>Last Name
+    <input type="text" name="last_name" required />
+    </label>
+    <label>Email
+      <input type="email" name="email" required />
+    </label>
+    <label>message
+      <textarea name="message" required></textarea>
+    </label>
+    <input
+      type="file"
+      name="attachment"
+      accept=".pdf,.doc,.docx"
+      required
+    />
+    <button type="submit">Send</button>
+   </form>
+ </main>
+
 	</body>
 </html>
+
+<script is:inline>
+  const form = document.querySelector('form');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    // Client-side validation
+    const file = formData.get('attachment');
+    const maxSize = 1 * 1024 * 1024; // 1MB
+
+    if (!formData.get('name') || !formData.get('email') || !formData.get('message')) {
+      alert('All fields are required.');
+      return;
+    }
+
+    if (file instanceof File) {
+      const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
+      if (!validTypes.includes(file.type)) {
+        alert('Only PDF or DOC/DOCX files are allowed.');
+        return;
+      }
+
+      if (file.size > maxSize) {
+        alert('File must be under 1MB.');
+        return;
+      }
+    }
+
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      body: formData, // Don't set Content-Type manually
+    });
+
+    if (response.ok) {
+      alert('Email sent!');
+      form.reset();
+    } else {
+      const error = await response.text();
+      alert(`Something went wrong: ${error}`);
+    }
+  });
+</script>
+
