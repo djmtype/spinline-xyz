@@ -18,7 +18,7 @@ export const prerender = false
 	<body class="flex bg-gray-100 items-center justify-center h-[100svh] w-full">
 
  <main class="container">
-   <div id="message-container" aria-live="polite"></div>
+   <div id="message-container" class="response" aria-live="polite" hidden></div>
    <form class="flex flex-col" method="POST" action="/api/contact" enctype="multipart/form-data">
     <label>First Name
     <input type="text" name="first_name" required />
@@ -54,12 +54,19 @@ export const prerender = false
 
     const formData = new FormData(form);
 
+    // Reset message container
+    messageContainer.textContent = '';
+    messageContainer.classList.remove('success', 'error');
+    messageContainer.hidden = true;
+
     // Client-side validation
     const file = formData.get('attachment');
     const maxSize = 1 * 1024 * 1024; // 1MB
 
     if (!formData.get('first_name') || !formData.get('last_name') || !formData.get('email') || !formData.get('message')) {
       messageContainer.textContent = 'All fields are required.';
+      messageContainer.classList.add('error');
+      messageContainer.hidden = false;
       console.log('All fields are required.');
       return;
     }
@@ -69,16 +76,22 @@ export const prerender = false
 
       if (!validTypes.includes(file.type)) {
         messageContainer.textContent = 'Only PDF or DOC/DOCX files are allowed.';
+        messageContainer.classList.add('error');
+        messageContainer.hidden = false;
         console.log('Only PDF or DOC/DOCX files are allowed.');
         return;
       }
 
       if (file.size > maxSize) {
         messageContainer.textContent = 'File must be under 1MB.';
+        messageContainer.classList.add('error');
+        messageContainer.hidden = false;
         console.log('File must be under 1MB.');
         return;
       }
     }
+
+    
 
     const response = await fetch('/api/contact', {
       method: 'POST',
@@ -87,13 +100,43 @@ export const prerender = false
 
     if (response.ok) {
       messageContainer.textContent = 'Email sent!';
+      messageContainer.classList.add('success');
+      messageContainer.hidden = false;
       console.log('Email sent!');
       form.reset();
     } else {
       const error = await response.text();
       messageContainer.textContent = `Something went wrong: ${error}`;
+      messageContainer.classList.add('error');
+      messageContainer.hidden = false;
       console.log(`Something went wrong: ${error}`);
     }
   });
 </script>
 
+<style>
+  .response {
+    --_text: black;
+    --_background: #eee;
+    --_border: #ccc;
+    color: var(--_text);
+    background-color: var(--_background);
+  }
+
+  .response:not([hidden]) {
+    padding: 1rlh;
+    border: 2px solid var(--_border);
+  }
+
+  .response.success {
+    --_text: #0c4322;
+    --_background: #b5ebcb;
+    --_border: #529d70;
+  }
+
+  .response.error {
+    --_text: #721c24;
+    --_background: #f8d7da;
+    --_border: #f5c6cb;
+  }
+</style>
