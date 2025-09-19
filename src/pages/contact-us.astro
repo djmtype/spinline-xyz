@@ -18,6 +18,7 @@ export const prerender = false
 	<body class="flex bg-gray-100 items-center justify-center h-[100svh] w-full">
 
  <main class="container">
+   <div id="message-container" aria-live="polite"></div>
    <form class="flex flex-col" method="POST" action="/api/contact" enctype="multipart/form-data">
     <label>First Name
     <input type="text" name="first_name" required />
@@ -46,6 +47,7 @@ export const prerender = false
 
 <script is:inline>
   const form = document.querySelector('form');
+  const messageContainer = document.getElementById('message-container');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -57,7 +59,8 @@ export const prerender = false
     const maxSize = 1 * 1024 * 1024; // 1MB
 
     if (!formData.get('first_name') || !formData.get('last_name') || !formData.get('email') || !formData.get('message')) {
-      alert('All fields are required.');
+      messageContainer.textContent = 'All fields are required.';
+      console.log('All fields are required.');
       return;
     }
 
@@ -65,12 +68,14 @@ export const prerender = false
       const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 
       if (!validTypes.includes(file.type)) {
-        alert('Only PDF or DOC/DOCX files are allowed.');
+        messageContainer.textContent = 'Only PDF or DOC/DOCX files are allowed.';
+        console.log('Only PDF or DOC/DOCX files are allowed.');
         return;
       }
 
       if (file.size > maxSize) {
-        alert('File must be under 1MB.');
+        messageContainer.textContent = 'File must be under 1MB.';
+        console.log('File must be under 1MB.');
         return;
       }
     }
@@ -81,11 +86,13 @@ export const prerender = false
     });
 
     if (response.ok) {
-      alert('Email sent!');
+      messageContainer.textContent = 'Email sent!';
+      console.log('Email sent!');
       form.reset();
     } else {
       const error = await response.text();
-      alert(`Something went wrong: ${error}`);
+      messageContainer.textContent = `Something went wrong: ${error}`;
+      console.log(`Something went wrong: ${error}`);
     }
   });
 </script>
