@@ -56,7 +56,7 @@ export const prerender = false
     const file = formData.get('attachment');
     const maxSize = 1 * 1024 * 1024; // 1MB
 
-    if (!formData.get('name') || !formData.get('email') || !formData.get('message')) {
+    if (!formData.get('first_name') || !formData.get('last_name') || !formData.get('email') || !formData.get('message')) {
       alert('All fields are required.');
       return;
     }

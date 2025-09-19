@@ -7,12 +7,14 @@ const resend = new Resend(import.meta.env.RESEND_API_KEY);
 export async function POST({ request }: { request: Request }) {
   const formData = await request.formData();
 
-  const name = formData.get('name')?.toString() ?? '';
+  const firstName = formData.get('first_name')?.toString() ?? '';
+  const lastName = formData.get('last_name')?.toString() ?? '';
+  const name = `${firstName} ${lastName}`.trim();
   const email = formData.get('email')?.toString() ?? '';
   const message = formData.get('message')?.toString() ?? '';
   const file = formData.get('attachment') as File;
 
-  if (!name || !email || !message || !file) {
+  if (!firstName || !lastName || !email || !message || !file) {
     return new Response('Missing fields', { status: 400 });
   }
 
